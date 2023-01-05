@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>pixi-graph</title>
+  <script type="module" src="./main.js"></script>
+</head>
+
+<body>
+  <div id="graph" style="background-color: #000000;"></div>
+  <div id="controls">
+    <button id="clear">Clear</button>
+    <button id="export">Export</button>
+    <button id="import">Import</button>
+    <div style="height: 10px"></div>
+    <button id="reset-view">Reset View</button>
+  </div>
+  <div>
+
+    <a href="#click">
+      <ul class="menu-dropdown" id="nodeMenu" hidden="true">
+        <li id="link-parent">Link Parent</li>
+        <li id="link-child">Link Child</li>
+        <li id="link-partner">Link Partner</li>
+        <li></li>
+        <li id="create-parents-linked">Add Parents (f m)</li>
+        <li id="create-child-linked">Add Child</li>
+        <li></li>
+        <li id="delete-single">Delete (Single)</li>
+        <li id="delete-children">Delete (Children)</li>
+        <li id="delete">Delete (All)</li>
+
+      </ul>
+    </a>
+
+    <a href="#click">
+      <ul class="menu-dropdown" id="backgroundMenu" hidden="true">
+        <li id="create-person">Add Person</li>
+        <li id="create-parents">Add Parents (f m)</li>
+      </ul>
+    </a>
+
+</body>
+
+</html>
