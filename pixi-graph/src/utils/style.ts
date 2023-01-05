@@ -1,6 +1,5 @@
 import deepmerge from 'deepmerge';
 import { BaseNodeAttributes, BaseEdgeAttributes } from '../attributes';
-import { TextType } from './text';
 
 export interface GraphStyle {
   node: {
@@ -12,14 +11,12 @@ export interface GraphStyle {
     };
     icon: {
       content: string;
-      type: TextType;
       fontFamily: string;
       fontSize: number;
       color: string;
     };
     label: {
       content: string;
-      type: TextType;
       fontFamily: string;
       fontSize: number;
       color: string;
@@ -38,7 +35,7 @@ export type EdgeStyle = GraphStyle['edge'];
 
 export type StyleDefinition<Style, Attributes> =
   ((attributes: Attributes) => Style) |
-  {[Key in keyof Style]?: StyleDefinition<Style[Key], Attributes>} |
+  { [Key in keyof Style]?: StyleDefinition<Style[Key], Attributes> } |
   Style;
 
 export type NodeStyleDefinition<NodeAttributes extends BaseNodeAttributes = BaseNodeAttributes> = StyleDefinition<NodeStyle, NodeAttributes>;

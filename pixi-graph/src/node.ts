@@ -51,7 +51,7 @@ export class PixiNode extends TypedEmitter<PixiNodeEvents> {
 
   private createNodeLabel() {
     const nodeLabelGfx = new Container();
-    nodeLabelGfx.interactive = true;
+    nodeLabelGfx.interactive = false;
     nodeLabelGfx.buttonMode = true;
     nodeLabelGfx.on('mousemove', (event: InteractionEvent) => this.emit('mousemove', event.data.originalEvent as MouseEvent));
     nodeLabelGfx.on('mouseover', (event: InteractionEvent) => this.emit('mouseover', event.data.originalEvent as MouseEvent));

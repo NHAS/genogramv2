@@ -59,7 +59,7 @@ export function updateNodeStyle(nodeGfx: Container, nodeStyle: NodeStyle, textur
 
   const nodeIconTextureKey = [NODE_ICON, nodeStyle.icon.fontFamily, nodeStyle.icon.fontSize, nodeStyle.icon.content].join(DELIMETER);
   const nodeIconTexture = textureCache.get(nodeIconTextureKey, () => {
-    const text = textToPixi(nodeStyle.icon.type, nodeStyle.icon.content, {
+    const text = textToPixi(nodeStyle.icon.content, {
       fontFamily: nodeStyle.icon.fontFamily,
       fontSize: nodeStyle.icon.fontSize
     });

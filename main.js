@@ -1,6 +1,6 @@
 import './style.css'
 import Graph from 'graphology';
-import { PixiGraph, TextType } from './pixi-graph';
+import { PixiGraph } from './pixi-graph';
 import FontFaceObserver from 'fontfaceobserver';
 
 
@@ -52,13 +52,12 @@ window.addEventListener('DOMContentLoaded', async () => {
       },
       icon: {
         content: 'person',
-        fontFamily: 'Material Icons',
+        fontFamily: 'HelveticaRegular',
         fontSize: 20,
         color: '#ffffff',
       },
       label: {
         content: node => node.id,
-        type: TextType.BITMAP_TEXT,
         fontFamily: 'HelveticaRegular',
         fontSize: 12,
         color: '#333333',
@@ -86,9 +85,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   };
 
   const resources = [
-    { name: 'HelveticaRegular', url: 'https://gist.githubusercontent.com/zakjan/b61c0a26d297edf0c09a066712680f37/raw/8cdda3c21ba3668c3dd022efac6d7f740c9f1e18/HelveticaRegular.fnt' },
+    { name: 'HelveticaRegular', url: 'HelveticaRegular.fnt' },
   ];
-  await new FontFaceObserver('Material Icons').load();
+  //await new FontFaceObserver('Material Icons').load();
 
 
   document.addEventListener('contextmenu', function (evt) {

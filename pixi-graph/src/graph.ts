@@ -12,7 +12,6 @@ import { Cull } from '@pixi-essentials/cull';
 import { AbstractGraph } from 'graphology-types';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { GraphStyleDefinition, resolveStyleDefinitions } from './utils/style';
-import { TextType } from './utils/text';
 import { BaseNodeAttributes, BaseEdgeAttributes } from './attributes';
 import { TextureCache } from './texture-cache';
 import { PixiNode } from './node';
@@ -34,14 +33,12 @@ const DEFAULT_STYLE: GraphStyleDefinition = {
       color: '#ffffff',
     },
     icon: {
-      type: TextType.TEXT,
       fontFamily: 'Arial',
       fontSize: 20,
       color: '#ffffff',
       content: '',
     },
     label: {
-      type: TextType.TEXT,
       fontFamily: 'Arial',
       fontSize: 12,
       content: '',
@@ -138,7 +135,6 @@ export class PixiGraph<NodeAttributes extends BaseNodeAttributes = BaseNodeAttri
     this.app = new Application({
       resizeTo: this.container,
       resolution: window.devicePixelRatio,
-      transparent: true,
       antialias: true,
       autoDensity: true,
       backgroundColor: 0x2980b9,
@@ -186,6 +182,7 @@ export class PixiGraph<NodeAttributes extends BaseNodeAttributes = BaseNodeAttri
     // preload resources
     if (this.resources) {
       this.app.loader.add(this.resources);
+
     }
     this.app.loader.load(() => {
       this.viewport.on('frame-end', () => {
@@ -600,10 +597,7 @@ export class PixiGraph<NodeAttributes extends BaseNodeAttributes = BaseNodeAttri
     const cull = new Cull();
     cull.addAll((this.viewport.children as Container[]).map(layer => layer.children).flat());
     cull.cull(this.app.renderer.screen);
-    // console.log(
-    //   Array.from((cull as any)._targetList as Set<DisplayObject>).filter(x => x.visible === true).length,
-    //   Array.from((cull as any)._targetList as Set<DisplayObject>).filter(x => x.visible === false).length
-    // );
+
 
     // levels of detail
     const zoom = this.viewport.scale.x;
