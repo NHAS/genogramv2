@@ -32,12 +32,6 @@ const DEFAULT_STYLE: GraphStyleDefinition = {
       width: 2,
       color: '#ffffff',
     },
-    icon: {
-      fontFamily: 'Arial',
-      fontSize: 20,
-      color: '#ffffff',
-      content: '',
-    },
     label: {
       fontFamily: 'Arial',
       fontSize: 12,

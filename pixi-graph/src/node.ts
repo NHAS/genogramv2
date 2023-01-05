@@ -2,7 +2,7 @@ import { Container } from '@pixi/display';
 import { InteractionEvent } from '@pixi/interaction';
 import { IPointData } from '@pixi/math';
 import { TypedEmitter } from 'tiny-typed-emitter';
-import { createNode, updateNodeStyle, updateNodeVisibility } from './renderers/node';
+import { createNode, updateNodeStyle } from './renderers/node';
 import { createNodeLabel, updateNodeLabelStyle, updateNodeLabelVisibility } from './renderers/node-label';
 import { NodeStyle } from './utils/style';
 import { TextureCache } from './texture-cache';
@@ -75,7 +75,6 @@ export class PixiNode extends TypedEmitter<PixiNodeEvents> {
   }
 
   updateVisibility(zoomStep: number) {
-    updateNodeVisibility(this.nodeGfx, zoomStep);
     updateNodeLabelVisibility(this.nodeLabelGfx, zoomStep);
   }
 }

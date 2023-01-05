@@ -1,7 +1,7 @@
 import './style.css'
 import Graph from 'graphology';
 import { PixiGraph } from './pixi-graph';
-import FontFaceObserver from 'fontfaceobserver';
+
 
 
 // d3.schemeCategory10
@@ -18,7 +18,9 @@ const colors = [
   '#17becf',
 ];
 
+
 window.addEventListener('DOMContentLoaded', async () => {
+
   const graph = new Graph();
   const { nodes, links } = await (await fetch('miserables.json')).json();
   // const { nodes, links } = await (await fetch('socfb-Caltech36.json')).json();
@@ -34,7 +36,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     graph.setNodeAttribute(node, 'x', Math.random());
     graph.setNodeAttribute(node, 'y', Math.random());
   });
-  // forceAtlas2.assign(graph, { iterations: 300, settings: { ...forceAtlas2.inferSettings(graph), scalingRatio: 80 }});
+
   const positions = await (await fetch('miserables-positions.json')).json();
   graph.forEachNode(node => {
     const position = positions[node];
@@ -87,8 +89,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   const resources = [
     { name: 'HelveticaRegular', url: 'HelveticaRegular.fnt' },
   ];
-  //await new FontFaceObserver('Material Icons').load();
-
 
   document.addEventListener('contextmenu', function (evt) {
     evt.preventDefault();
@@ -104,33 +104,37 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
 
+  let clickedNode = null;
   pixiGraph.on('nodeClick', (event, nodeKey) => {
     if (event.button == 2) {
       document.getElementById("nodeMenu").hidden = !document.getElementById("nodeMenu").hidden;
       document.getElementById("nodeMenu").style.top = mouseY(event) + 'px';
       document.getElementById("nodeMenu").style.left = mouseX(event) + 'px';
+      clickedNode = nodeKey;
 
       console.log('nodeClick', event, nodeKey)
     }
 
   });
-  // pixiGraph.on('nodeMousemove', (event, nodeKey) => console.log('nodeMousemove', event, nodeKey));
-  // pixiGraph.on('nodeMouseover', (event, nodeKey) => console.log('nodeMouseover', event, nodeKey));
-  // pixiGraph.on('nodeMouseout', (event, nodeKey) => console.log('nodeMouseout', event, nodeKey));
-  // pixiGraph.on('nodeMousedown', (event, nodeKey) => console.log('nodeMousedown', event, nodeKey));
-  pixiGraph.on('nodeMouseup', (event, nodeKey) => console.log('nodeMouseup', event, nodeKey));
-  // pixiGraph.on('nodeRightMousedown', (event, nodeKey) => console.log('nodeRightMousedown', event, nodeKey));
-  // pixiGraph.on('nodeRightMouseup', (event, nodeKey) => console.log('nodeRightMouseup', event, nodeKey));
-  pixiGraph.on('edgeClick', (event, edgeKey) => console.log('edgeClick', event, edgeKey));
-  // pixiGraph.on('edgeMousemove', (event, edgeKey) => console.log('edgeMousemove', event, edgeKey));
-  // pixiGraph.on('edgeMouseover', (event, edgeKey) => console.log('edgeMouseover', event, edgeKey));
-  // pixiGraph.on('edgeMouseout', (event, edgeKey) => console.log('edgeMouseout', event, edgeKey));
-  // pixiGraph.on('edgeMousedown', (event, edgeKey) => console.log('edgeMousedown', event, edgeKey));
-  pixiGraph.on('edgeMouseup', (event, edgeKey) => console.log('edgeMouseup', event, edgeKey));
+  document.getElementById('add-link').addEventListener('click', linkNode(pixiGraph, clickedNode));
+
+
+
+  pixiGraph.on('edgeClick', (event, nodeKey) => {
+    if (event.button == 2) {
+      document.getElementById("linkMenu").hidden = !document.getElementById("linkMenu").hidden;
+      document.getElementById("linkMenu").style.top = mouseY(event) + 'px';
+      document.getElementById("linkMenu").style.left = mouseX(event) + 'px';
+
+      console.log('edgeClick', event, nodeKey)
+    }
+
+  });
 
   pixiGraph.viewport.on("mouseup", function (e) {
     document.getElementById("nodeMenu").hidden = true;
     document.getElementById("backgroundMenu").hidden = true;
+    document.getElementById("linkMenu").hidden = true;
   })
 
   pixiGraph.viewport.on("rightup", function (e) {
@@ -140,22 +144,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   })
 
 
-  const addNode = (eventPosition) => {
-    for (let i = 0; i < 1000; i++) {
-      const id = Math.floor(Math.random() * 10e12).toString(36);
-
-      const worldPosition = pixiGraph.viewport.toWorld(eventPosition);
-
-      const x = worldPosition.x;
-      const y = worldPosition.y;
-      const node = { id, x, y };
-
-      graph.addNode(node.id, node);
-    }
-    document.getElementById("backgroundMenu").hidden = true;
-  };
-  document.getElementById('create-person').addEventListener('click', addNode);
-
+  document.getElementById('create-person').addEventListener('click', addNode(pixiGraph));
 
   const clear = () => {
     graph.clear();
@@ -179,6 +168,43 @@ window.addEventListener('DOMContentLoaded', async () => {
   };
   document.getElementById('import').addEventListener('click', importGraph);
 });
+
+
+function addNode(pixiGraph) {
+
+  return function (eventPosition) {
+
+    const id = Math.floor(Math.random() * 10e12).toString(36);
+
+    const worldPosition = pixiGraph.viewport.toWorld(eventPosition);
+
+    const x = worldPosition.x;
+    const y = worldPosition.y;
+    const node = { id, x, y };
+
+    pixiGraph.graph.addNode(node.id, node);
+
+    document.getElementById("backgroundMenu").hidden = true;
+  }
+}
+
+function linkNode(pixiGraph, nodeStart) {
+
+  return function (eventPosition) {
+
+    const id = Math.floor(Math.random() * 10e12).toString(36);
+
+    const worldPosition = pixiGraph.viewport.toWorld(eventPosition);
+
+    const x = worldPosition.x;
+    const y = worldPosition.y;
+    const node = { id, x, y };
+
+    pixiGraph.graph.addNode(node.id, node);
+
+    document.getElementById("nodeMenu").hidden = true;
+  }
+}
 
 function mouseX(evt) {
   if (evt.pageX) {

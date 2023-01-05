@@ -9,12 +9,6 @@ export interface GraphStyle {
       width: number;
       color: string;
     };
-    icon: {
-      content: string;
-      fontFamily: string;
-      fontSize: number;
-      color: string;
-    };
     label: {
       content: string;
       fontFamily: string;
