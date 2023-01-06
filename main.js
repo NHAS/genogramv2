@@ -102,7 +102,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
 
-  var leftClickedNode = null;
+  let leftClickedNode = null;
   pixiGraph.on('nodeClick', (event, nodeKey) => {
     if (event.button == 2) {
       document.getElementById("nodeMenu").hidden = !document.getElementById("nodeMenu").hidden;
@@ -128,17 +128,29 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('delete-person-single').addEventListener('click', dropNode);
 
 
-
-  pixiGraph.on('edgeClick', (event, nodeKey) => {
+  let leftClickedEdge = null;
+  pixiGraph.on('edgeClick', (event, edgeKey) => {
     if (event.button == 2) {
       document.getElementById("linkMenu").hidden = !document.getElementById("linkMenu").hidden;
       document.getElementById("linkMenu").style.top = mouseY(event) + 'px';
       document.getElementById("linkMenu").style.left = mouseX(event) + 'px';
+      leftClickedEdge = edgeKey;
 
-      console.log('edgeClick', event, nodeKey)
+      console.log('edgeClick', event, edgeKey)
     }
 
   });
+
+  const dropEdge = () => {
+
+    graph.dropEdge(leftClickedEdge);
+    document.getElementById("linkMenu").hidden = true;
+
+  };
+
+  document.getElementById('delete-link').addEventListener('click', dropEdge);
+
+
 
   pixiGraph.viewport.on("mouseup", function (e) {
     document.getElementById("nodeMenu").hidden = true;
