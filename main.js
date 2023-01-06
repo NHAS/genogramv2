@@ -23,8 +23,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   const graph = new Graph();
   const { nodes, links } = await (await fetch('miserables.json')).json();
-  // const { nodes, links } = await (await fetch('socfb-Caltech36.json')).json();
+
   nodes.forEach(node => {
+    node.name = node.id
     graph.addNode(node.id, node);
   });
   links.forEach(link => {
@@ -42,24 +43,21 @@ window.addEventListener('DOMContentLoaded', async () => {
     const position = positions[node];
     graph.setNodeAttribute(node, 'x', position.x);
     graph.setNodeAttribute(node, 'y', position.y);
+
   });
 
   const style = {
     node: {
+      name: node => { node.name },
       size: 15,
+      gender: node => node.gender,
       color: node => colors[(node.group || 0) % colors.length],
       border: {
         width: 2,
         color: '#9F73AB',
       },
-      icon: {
-        content: 'person',
-        fontFamily: 'HelveticaRegular',
-        fontSize: 20,
-        color: '#ffffff',
-      },
       label: {
-        content: node => node.id,
+        content: node => node.name,
         fontFamily: 'HelveticaRegular',
         fontSize: 12,
         color: '#333333',
@@ -104,19 +102,30 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
 
-  let clickedNode = null;
+  var leftClickedNode = null;
   pixiGraph.on('nodeClick', (event, nodeKey) => {
     if (event.button == 2) {
       document.getElementById("nodeMenu").hidden = !document.getElementById("nodeMenu").hidden;
       document.getElementById("nodeMenu").style.top = mouseY(event) + 'px';
       document.getElementById("nodeMenu").style.left = mouseX(event) + 'px';
-      clickedNode = nodeKey;
+      leftClickedNode = nodeKey;
 
-      console.log('nodeClick', event, nodeKey)
+      console.log('nodeClick', leftClickedNode)
     }
 
   });
-  document.getElementById('add-link').addEventListener('click', linkNode(pixiGraph, clickedNode));
+  document.getElementById('add-link').addEventListener('click', linkNode(pixiGraph, leftClickedNode));
+
+
+
+  const dropNode = () => {
+
+    graph.dropNode(leftClickedNode);
+    document.getElementById("nodeMenu").hidden = true;
+
+  };
+
+  document.getElementById('delete-person-single').addEventListener('click', dropNode);
 
 
 
@@ -144,7 +153,45 @@ window.addEventListener('DOMContentLoaded', async () => {
   })
 
 
-  document.getElementById('create-person').addEventListener('click', addNode(pixiGraph));
+  document.getElementById('create-person-female').addEventListener('click', addNode(pixiGraph, "female"));
+  document.getElementById('create-person-male').addEventListener('click', addNode(pixiGraph, "male"));
+
+  const addParents = (eventPosition) => {
+
+    let id1 = Math.floor(Math.random() * 10e12).toString(36);
+    let id = id1;
+
+    let worldPosition = pixiGraph.viewport.toWorld(eventPosition);
+
+    let x = worldPosition.x;
+    let name = id;
+    let y = worldPosition.y;
+    let gender = "male"
+
+    let node = { id, x, y, gender, name };
+
+    pixiGraph.graph.addNode(node.id, node);
+
+    let id2 = Math.floor(Math.random() * 10e12).toString(36);
+    id = id2
+    worldPosition = pixiGraph.viewport.toWorld(eventPosition);
+
+    x = worldPosition.x + 100;
+    y = worldPosition.y;
+    name = id
+    gender = "female"
+
+    node = { id, x, y, gender, name };
+
+    pixiGraph.graph.addNode(node.id, node);
+
+    pixiGraph.graph.addEdge(id1, id2)
+
+    document.getElementById("backgroundMenu").hidden = true;
+
+  };
+  document.getElementById('create-parents').addEventListener('click', addParents);
+
 
   const clear = () => {
     graph.clear();
@@ -170,7 +217,9 @@ window.addEventListener('DOMContentLoaded', async () => {
 });
 
 
-function addNode(pixiGraph) {
+
+
+function addNode(pixiGraph, gender) {
 
   return function (eventPosition) {
 
@@ -180,7 +229,9 @@ function addNode(pixiGraph) {
 
     const x = worldPosition.x;
     const y = worldPosition.y;
-    const node = { id, x, y };
+    const name = "jim"
+
+    const node = { id, x, y, gender, name };
 
     pixiGraph.graph.addNode(node.id, node);
 

@@ -4,7 +4,7 @@ import { BaseNodeAttributes, BaseEdgeAttributes } from '../attributes';
 export interface GraphStyle {
   node: {
     size: number;
-    color: string;
+    gender: string;
     border: {
       width: number;
       color: string;

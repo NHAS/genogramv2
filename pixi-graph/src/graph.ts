@@ -27,7 +27,6 @@ Renderer.registerPlugin('interaction', InteractionManager);
 const DEFAULT_STYLE: GraphStyleDefinition = {
   node: {
     size: 15,
-    color: '#000000',
     border: {
       width: 2,
       color: '#ffffff',
@@ -267,6 +266,8 @@ export class PixiGraph<NodeAttributes extends BaseNodeAttributes = BaseNodeAttri
     const nodeKey = data.key;
     const nodeAttributes = data.attributes;
     this.createNode(nodeKey, nodeAttributes);
+
+
   }
 
   private onGraphEdgeAdded(data: { key: string, attributes: EdgeAttributes, source: string, target: string }) {
@@ -282,6 +283,7 @@ export class PixiGraph<NodeAttributes extends BaseNodeAttributes = BaseNodeAttri
   private onGraphNodeDropped(data: { key: string }) {
     const nodeKey = data.key;
     this.dropNode(nodeKey);
+
   }
 
   private onGraphEdgeDropped(data: { key: string }) {
@@ -437,6 +439,7 @@ export class PixiGraph<NodeAttributes extends BaseNodeAttributes = BaseNodeAttri
   }
 
   private createNode(nodeKey: string, nodeAttributes: NodeAttributes) {
+
     const node = new PixiNode();
     node.on('mousemove', (event: MouseEvent) => {
       this.emit('nodeMousemove', event, nodeKey);
@@ -532,15 +535,33 @@ export class PixiGraph<NodeAttributes extends BaseNodeAttributes = BaseNodeAttri
   private dropNode(nodeKey: string) {
     const node = this.nodeKeyToNodeObject.get(nodeKey)!;
 
+    // move to front
+
+    if (node.hovered) {
+      const nodeIndex = this.frontNodeLayer.getChildIndex(node.nodeGfx);
+      this.nodeLayer.removeChildAt(nodeIndex);
+      this.nodeLabelLayer.removeChildAt(nodeIndex);
+      this.frontNodeLayer.removeChildAt(nodeIndex);
+      this.frontNodeLabelLayer.removeChildAt(nodeIndex);
+    }
     this.nodeLayer.removeChild(node.nodeGfx);
     this.nodeLabelLayer.removeChild(node.nodeLabelGfx);
     this.frontNodeLayer.removeChild(node.nodePlaceholderGfx);
     this.frontNodeLabelLayer.removeChild(node.nodeLabelPlaceholderGfx);
+
     this.nodeKeyToNodeObject.delete(nodeKey);
   }
 
   private dropEdge(edgeKey: string) {
     const edge = this.edgeKeyToEdgeObject.get(edgeKey)!;
+
+    if (edge.hovered) {
+      const edgeIndex = this.frontEdgeLayer.getChildIndex(edge.edgeGfx);
+      this.edgeLayer.removeChildAt(edgeIndex);
+      this.frontEdgeLayer.removeChildAt(edgeIndex);
+      this.edgeLayer.addChild(edge.edgeGfx);
+      this.frontEdgeLayer.addChild(edge.edgePlaceholderGfx);
+    }
 
     this.edgeLayer.removeChild(edge.edgeGfx);
     this.frontEdgeLayer.removeChild(edge.edgePlaceholderGfx);
@@ -560,6 +581,7 @@ export class PixiGraph<NodeAttributes extends BaseNodeAttributes = BaseNodeAttri
 
     const nodeStyleDefinitions = [DEFAULT_STYLE.node, this.style.node, node.hovered ? this.hoverStyle.node : undefined];
     const nodeStyle = resolveStyleDefinitions(nodeStyleDefinitions, nodeAttributes);
+
     node.updateStyle(nodeStyle, this.textureCache);
   }
 
@@ -574,8 +596,6 @@ export class PixiGraph<NodeAttributes extends BaseNodeAttributes = BaseNodeAttri
 
   private updateEdgeStyle(edgeKey: string, edgeAttributes: EdgeAttributes, _sourceNodeKey: string, _targetNodeKey: string, sourceNodeAttributes: NodeAttributes, targetNodeAttributes: NodeAttributes) {
     const edge = this.edgeKeyToEdgeObject.get(edgeKey)!;
-    // const sourceNode = this.nodeKeyToNodeObject.get(sourceNodeKey)!;
-    // const targetNode = this.nodeKeyToNodeObject.get(targetNodeKey)!;
 
     const sourceNodePosition = { x: sourceNodeAttributes.x, y: sourceNodeAttributes.y };
     const targetNodePosition = { x: targetNodeAttributes.x, y: targetNodeAttributes.y };
