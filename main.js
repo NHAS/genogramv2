@@ -26,9 +26,11 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   nodes.forEach(node => {
     node.name = node.id
+
     graph.addNode(node.id, node);
   });
   links.forEach(link => {
+    link.color = '#00000'
     graph.addEdge(link.source, link.target, link);
   });
 
@@ -66,8 +68,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       },
     },
     edge: {
-      width: link => Math.log((link.value || 0) + 1) + 1,
-      color: '#00000',
+      width: 4,
+      color: link => link.color,
     },
   };
   const hoverStyle = {
@@ -123,7 +125,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         return
       }
 
-      graph.addEdge(leftClickedNode, linkTo)
+      graph.addEdge(leftClickedNode, linkTo, { color: "#00000" })
       linkTo = null;
     },
 
@@ -148,10 +150,10 @@ window.addEventListener('DOMContentLoaded', async () => {
       let maleId = addNode(pixiGraph, "UNNAMED", "female", x - 50, y - 50, false)
       let femaleId = addNode(pixiGraph, "UNNAMED", "male", x + 50, y - 50, false)
 
-      pixiGraph.graph.addEdge(maleId, femaleId)
+      pixiGraph.graph.addEdge(maleId, femaleId, { color: "#00000" })
 
-      pixiGraph.graph.addEdge(maleId, leftClickedNode)
-      pixiGraph.graph.addEdge(femaleId, leftClickedNode)
+      pixiGraph.graph.addEdge(maleId, leftClickedNode, { color: "#00000" })
+      pixiGraph.graph.addEdge(femaleId, leftClickedNode, { color: "#00000" })
 
     },
 
@@ -162,7 +164,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       let newPersonId = addNode(pixiGraph, "UNNAMED", "unknown", x, y + 100, false)
 
-      pixiGraph.graph.addEdge(leftClickedNode, newPersonId)
+      pixiGraph.graph.addEdge(leftClickedNode, newPersonId, { color: "#00000" })
     },
 
     'delete-person-single': function () {
@@ -185,14 +187,36 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   });
 
-  const dropEdge = () => {
+  addMenuClickHandlers("linkMenu", {
+    'delete-link': function () { graph.dropEdge(leftClickedEdge) },
+    "set-link-normal": function () {
+      graph.setEdgeAttribute(leftClickedEdge, "color", "#00000")
+    },
+    "set-link-friends": function () {
+      graph.setEdgeAttribute(leftClickedEdge, "color", "#185426")
+    },
+    "set-link-intimate": function () {
+      graph.setEdgeAttribute(leftClickedEdge, "color", "#09eb58")
+    },
+    "set-link-hostile": function () {
+      graph.setEdgeAttribute(leftClickedEdge, "color", "#de071c")
+    },
+    "set-link-violence": function () {
+      graph.setEdgeAttribute(leftClickedEdge, "color", "#fc031b")
+    },
+    "set-link-physical-abuse": function () {
+      graph.setEdgeAttribute(leftClickedEdge, "color", "#0911eb")
+    },
+    "set-link-emotional-abuse": function () {
+      graph.setEdgeAttribute(leftClickedEdge, "color", "#0911eb")
+    },
+    "set-link-sexual-abuse": function () {
+      graph.setEdgeAttribute(leftClickedEdge, "color", "#0911eb")
+    },
 
-    graph.dropEdge(leftClickedEdge);
-    document.getElementById("linkMenu").hidden = true;
 
-  };
+  })
 
-  document.getElementById('delete-link').addEventListener('click', dropEdge);
 
   pixiGraph.viewport.on("mouseup", function (e) {
     document.getElementById("nodeMenu").hidden = true;
@@ -221,7 +245,7 @@ window.addEventListener('DOMContentLoaded', async () => {
       let maleId = addNode(pixiGraph, "UNNAMED", "male", event.x, event.y)
       let femaleId = addNode(pixiGraph, "UNNAMED", "female", event.x + 100, event.y)
 
-      pixiGraph.graph.addEdge(maleId, femaleId)
+      pixiGraph.graph.addEdge(maleId, femaleId, { color: "#00000" })
     }
 
   })
