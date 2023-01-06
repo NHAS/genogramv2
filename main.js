@@ -102,7 +102,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
 
-  let leftClickedNode = null;
+  let leftClickedNode = null, linkTo = null;
   pixiGraph.on('nodeClick', (event, nodeKey) => {
     if (event.button == 2) {
       document.getElementById("nodeMenu").hidden = !document.getElementById("nodeMenu").hidden;
@@ -114,7 +114,19 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
   });
-  document.getElementById('add-link').addEventListener('click', linkNode(pixiGraph, leftClickedNode));
+  document.getElementById('add-link').addEventListener('click', function () {
+    document.getElementById("nodeMenu").hidden = true;
+
+    if (linkTo == null) {
+      linkTo = leftClickedNode
+
+      return
+    }
+
+    graph.addEdge(leftClickedNode, linkTo)
+    linkTo = null;
+
+  });
 
   document.getElementById('set-gender-male').addEventListener('click', function () {
     graph.setNodeAttribute(leftClickedNode, "gender", "male")
@@ -262,24 +274,6 @@ function addNode(pixiGraph, gender) {
     pixiGraph.graph.addNode(node.id, node);
 
     document.getElementById("backgroundMenu").hidden = true;
-  }
-}
-
-function linkNode(pixiGraph, nodeStart) {
-
-  return function (eventPosition) {
-
-    const id = Math.floor(Math.random() * 10e12).toString(36);
-
-    const worldPosition = pixiGraph.viewport.toWorld(eventPosition);
-
-    const x = worldPosition.x;
-    const y = worldPosition.y;
-    const node = { id, x, y };
-
-    pixiGraph.graph.addNode(node.id, node);
-
-    document.getElementById("nodeMenu").hidden = true;
   }
 }
 
