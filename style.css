@@ -70,3 +70,20 @@ body {
   opacity: 1;
   pointer-events: auto;
 }
+
+.input_menu {
+  position: absolute;
+  min-width: 300px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+}
+
+.input_menu form {
+  padding: 15px;
+}
+
+.right {
+  text-align: right;
+  float: right;
+}

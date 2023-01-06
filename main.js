@@ -169,6 +169,46 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     'delete-person-single': function () {
       graph.dropNode(leftClickedNode);
+    },
+
+    'edit-person-single': function (event) {
+
+      let x = graph.getNodeAttribute(leftClickedNode, "x")
+      let y = graph.getNodeAttribute(leftClickedNode, "y")
+
+
+      document.getElementById("nodeId").value = leftClickedNode
+
+      document.getElementById("genderDropDown").value = graph.getNodeAttribute(leftClickedNode, "gender")
+      document.getElementById("personName").value = graph.getNodeAttribute(leftClickedNode, "name")
+
+
+      document.getElementById("nodeEditMenu").hidden = false;
+
+
+      const worldPosition = pixiGraph.viewport.toScreen({ x: x, y: y });
+
+      let bounds = document.getElementById('nodeEditMenu').getBoundingClientRect()
+
+
+      document.getElementById("nodeEditMenu").style.top = worldPosition.y - bounds.height / 2 + 'px';
+      document.getElementById("nodeEditMenu").style.left = worldPosition.x - bounds.width / 2 + 'px';
+    }
+  })
+
+  addMenuClickHandlers("nodeEditMenu", {
+    "editPerson": function (e) {
+      e.preventDefault()
+
+      let gender = document.getElementById("genderDropDown").value
+      let name = document.getElementById("personName").value
+
+      graph.setNodeAttribute(document.getElementById("nodeId").value, "gender", gender)
+      graph.setNodeAttribute(document.getElementById("nodeId").value, "name", name)
+
+    },
+    "cancelEditPerson": function () {
+      e.preventDefault()
     }
   })
 
@@ -222,6 +262,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById("nodeMenu").hidden = true;
     document.getElementById("backgroundMenu").hidden = true;
     document.getElementById("linkMenu").hidden = true;
+    document.getElementById("nodeEditMenu").hidden = true;
   })
 
   pixiGraph.viewport.on("rightup", function (e) {
@@ -230,6 +271,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById("backgroundMenu").style.left = mouseX(e.data.originalEvent) + 'px';
     document.getElementById("linkMenu").hidden = true;
     document.getElementById("nodeMenu").hidden = true;
+    document.getElementById("nodeEditMenu").hidden = true;
   })
 
   addMenuClickHandlers("backgroundMenu", {
@@ -247,7 +289,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
       pixiGraph.graph.addEdge(maleId, femaleId, { color: "#00000" })
     }
-
   })
 
   const clear = () => {

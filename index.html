@@ -6,7 +6,8 @@
   <title>pixi-graph</title>
   <script type="module" src="./main.js"></script>
   <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
 </head>
 
 <body>
@@ -64,7 +65,7 @@
 
         </li>
 
-        <li class="item"><span>Edit</span></li>
+        <li class="item" id="edit-person-single"><span>Edit</span></li>
 
       </ul>
     </div>
@@ -112,6 +113,46 @@
 
       </ul>
     </div>
+  </div>
+
+  <div class="input_menu" id="nodeEditMenu" hidden="true">
+    <form>
+      <input type="hidden" id="nodeId" value="">
+      <div class="row">
+        <div class="six columns">
+          <label for="personName">Name</label>
+          <input class="u-full-width" type="text" placeholder="" id="personName">
+        </div>
+        <div class="six columns">
+          <label for="genderDropDown">Gender</label>
+          <select class="u-full-width" id="genderDropDown">
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="row">
+        <div class="six columns">
+          <label for="dob">DOB</label>
+          <input class="u-full-width" type="text" placeholder="" id="dob">
+        </div>
+        <div class="six columns">
+          <label for="personName">DOD</label>
+          <input class="u-full-width" type="text" placeholder="" id="dod">
+        </div>
+      </div>
+      <label for="notes">Notes</label>
+      <textarea class="u-full-width" id="notes"></textarea>
+      <div class="row">
+        <div class="six columns">
+          <input class="button-primary" type="submit" value="Finish" id="editPerson">
+        </div>
+        <div class="six columns right">
+          <input type="submit" value="Cancel" id="cancelEditPerson">
+        </div>
+      </div>
+    </form>
   </div>
 
 </body>
