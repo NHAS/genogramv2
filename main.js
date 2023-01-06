@@ -116,7 +116,20 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
   document.getElementById('add-link').addEventListener('click', linkNode(pixiGraph, leftClickedNode));
 
+  document.getElementById('set-gender-male').addEventListener('click', function () {
+    graph.setNodeAttribute(leftClickedNode, "gender", "male")
+    document.getElementById("nodeMenu").hidden = true;
+  });
 
+  document.getElementById('set-gender-female').addEventListener('click', function () {
+    graph.setNodeAttribute(leftClickedNode, "gender", "female")
+    document.getElementById("nodeMenu").hidden = true;
+  });
+
+  document.getElementById('set-gender-other').addEventListener('click', function () {
+    graph.setNodeAttribute(leftClickedNode, "gender", "unknown")
+    document.getElementById("nodeMenu").hidden = true;
+  });
 
   const dropNode = () => {
 
@@ -124,7 +137,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById("nodeMenu").hidden = true;
 
   };
-
   document.getElementById('delete-person-single').addEventListener('click', dropNode);
 
 
@@ -162,6 +174,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById("backgroundMenu").hidden = !document.getElementById("backgroundMenu").hidden;
     document.getElementById("backgroundMenu").style.top = mouseY(e.data.originalEvent) + 'px';
     document.getElementById("backgroundMenu").style.left = mouseX(e.data.originalEvent) + 'px';
+    document.getElementById("linkMenu").hidden = true;
+    document.getElementById("nodeMenu").hidden = true;
   })
 
 
