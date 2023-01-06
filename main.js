@@ -114,42 +114,62 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 
   });
-  document.getElementById('add-link').addEventListener('click', function () {
-    document.getElementById("nodeMenu").hidden = true;
 
-    if (linkTo == null) {
-      linkTo = leftClickedNode
+  addMenuClickHandlers("nodeMenu", {
+    "add-link": function () {
+      if (linkTo == null) {
+        linkTo = leftClickedNode
 
-      return
+        return
+      }
+
+      graph.addEdge(leftClickedNode, linkTo)
+      linkTo = null;
+    },
+
+    'set-gender-male': function () {
+      graph.setNodeAttribute(leftClickedNode, "gender", "male")
+    },
+
+    'set-gender-female': function () {
+      graph.setNodeAttribute(leftClickedNode, "gender", "female")
+    },
+
+    'set-gender-other': function () {
+      graph.setNodeAttribute(leftClickedNode, "gender", "unknown")
+    },
+
+    'add-parents': function () {
+
+      let x = graph.getNodeAttribute(leftClickedNode, "x")
+      let y = graph.getNodeAttribute(leftClickedNode, "y")
+
+
+      let maleId = addNode(pixiGraph, "UNNAMED", "female", x - 50, y - 50, false)
+      let femaleId = addNode(pixiGraph, "UNNAMED", "male", x + 50, y - 50, false)
+
+      pixiGraph.graph.addEdge(maleId, femaleId)
+
+      pixiGraph.graph.addEdge(maleId, leftClickedNode)
+      pixiGraph.graph.addEdge(femaleId, leftClickedNode)
+
+    },
+
+    'add-child': function () {
+
+      let x = graph.getNodeAttribute(leftClickedNode, "x")
+      let y = graph.getNodeAttribute(leftClickedNode, "y")
+
+      let newPersonId = addNode(pixiGraph, "UNNAMED", "unknown", x, y + 100, false)
+
+      pixiGraph.graph.addEdge(leftClickedNode, newPersonId)
+    },
+
+    'delete-person-single': function () {
+      graph.dropNode(leftClickedNode);
     }
+  })
 
-    graph.addEdge(leftClickedNode, linkTo)
-    linkTo = null;
-
-  });
-
-  document.getElementById('set-gender-male').addEventListener('click', function () {
-    graph.setNodeAttribute(leftClickedNode, "gender", "male")
-    document.getElementById("nodeMenu").hidden = true;
-  });
-
-  document.getElementById('set-gender-female').addEventListener('click', function () {
-    graph.setNodeAttribute(leftClickedNode, "gender", "female")
-    document.getElementById("nodeMenu").hidden = true;
-  });
-
-  document.getElementById('set-gender-other').addEventListener('click', function () {
-    graph.setNodeAttribute(leftClickedNode, "gender", "unknown")
-    document.getElementById("nodeMenu").hidden = true;
-  });
-
-  const dropNode = () => {
-
-    graph.dropNode(leftClickedNode);
-    document.getElementById("nodeMenu").hidden = true;
-
-  };
-  document.getElementById('delete-person-single').addEventListener('click', dropNode);
 
 
   let leftClickedEdge = null;
@@ -174,8 +194,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('delete-link').addEventListener('click', dropEdge);
 
-
-
   pixiGraph.viewport.on("mouseup", function (e) {
     document.getElementById("nodeMenu").hidden = true;
     document.getElementById("backgroundMenu").hidden = true;
@@ -190,46 +208,23 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById("nodeMenu").hidden = true;
   })
 
+  addMenuClickHandlers("backgroundMenu", {
+    'create-person-female': function (event) {
+      addNode(pixiGraph, "UNNAMED", "female", event.x, event.y)
+    },
+    'create-person-male': function (event) {
+      addNode(pixiGraph, "UNNAMED", "male", event.x, event.y)
 
-  document.getElementById('create-person-female').addEventListener('click', addNode(pixiGraph, "female"));
-  document.getElementById('create-person-male').addEventListener('click', addNode(pixiGraph, "male"));
+    },
+    'create-parents': function (event) {
 
-  const addParents = (eventPosition) => {
+      let maleId = addNode(pixiGraph, "UNNAMED", "male", event.x, event.y)
+      let femaleId = addNode(pixiGraph, "UNNAMED", "female", event.x + 100, event.y)
 
-    let id1 = Math.floor(Math.random() * 10e12).toString(36);
-    let id = id1;
+      pixiGraph.graph.addEdge(maleId, femaleId)
+    }
 
-    let worldPosition = pixiGraph.viewport.toWorld(eventPosition);
-
-    let x = worldPosition.x;
-    let name = id;
-    let y = worldPosition.y;
-    let gender = "male"
-
-    let node = { id, x, y, gender, name };
-
-    pixiGraph.graph.addNode(node.id, node);
-
-    let id2 = Math.floor(Math.random() * 10e12).toString(36);
-    id = id2
-    worldPosition = pixiGraph.viewport.toWorld(eventPosition);
-
-    x = worldPosition.x + 100;
-    y = worldPosition.y;
-    name = id
-    gender = "female"
-
-    node = { id, x, y, gender, name };
-
-    pixiGraph.graph.addNode(node.id, node);
-
-    pixiGraph.graph.addEdge(id1, id2)
-
-    document.getElementById("backgroundMenu").hidden = true;
-
-  };
-  document.getElementById('create-parents').addEventListener('click', addParents);
-
+  })
 
   const clear = () => {
     graph.clear();
@@ -241,40 +236,71 @@ window.addEventListener('DOMContentLoaded', async () => {
   };
   document.getElementById('reset-view').addEventListener('click', resetView);
 
-  let serializedGraph;
-  const exportGraph = () => {
-    serializedGraph = graph.export();
-    console.log(serializedGraph);
-  };
-  document.getElementById('export').addEventListener('click', exportGraph);
+  document.getElementById('export').addEventListener('click', function () {
+    let serializedGraph = graph.export();
+    download(JSON.stringify(serializedGraph), "genogram.json", "application/json")
+  });
 
-  const importGraph = () => {
-    graph.import(serializedGraph);
-  };
-  document.getElementById('import').addEventListener('click', importGraph);
+  document.getElementById('import').addEventListener('click', function () {
+
+    var input = document.createElement('input');
+    input.type = 'file';
+
+    input.onchange = e => {
+
+      // getting a hold of the file reference
+      var file = e.target.files[0];
+
+      // setting up the reader
+      var reader = new FileReader();
+      reader.readAsText(file, 'UTF-8');
+
+      // here we tell the reader what to do when it's done reading...
+      reader.onload = readerEvent => {
+        var content = JSON.parse(readerEvent.target.result); // this is the content!
+        graph.import(content);
+      }
+
+    }
+
+    input.click();
+  });
+
 });
 
-
-
-
-function addNode(pixiGraph, gender) {
-
-  return function (eventPosition) {
-
-    const id = Math.floor(Math.random() * 10e12).toString(36);
-
-    const worldPosition = pixiGraph.viewport.toWorld(eventPosition);
-
-    const x = worldPosition.x;
-    const y = worldPosition.y;
-    const name = "jim"
-
-    const node = { id, x, y, gender, name };
-
-    pixiGraph.graph.addNode(node.id, node);
-
-    document.getElementById("backgroundMenu").hidden = true;
+function download(data, filename, type) {
+  var file = new Blob([data], { type: type });
+  if (window.navigator.msSaveOrOpenBlob) // IE10+
+    window.navigator.msSaveOrOpenBlob(file, filename);
+  else { // Others
+    var a = document.createElement("a"),
+      url = URL.createObjectURL(file);
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }, 0);
   }
+}
+
+function addNode(pixiGraph, name, gender, x1, y1, normalise = true) {
+
+  const id = Math.floor(Math.random() * 10e12).toString(36);
+
+  if (normalise) {
+    const worldPosition = pixiGraph.viewport.toWorld({ x: x1, y: y1 });
+
+    x1 = worldPosition.x;
+    y1 = worldPosition.y;
+  }
+  const node = { id, x: x1, y: y1, gender, name };
+
+  pixiGraph.graph.addNode(node.id, node);
+
+  return id
 }
 
 function mouseX(evt) {
@@ -298,5 +324,21 @@ function mouseY(evt) {
       document.body.scrollTop);
   } else {
     return null;
+  }
+}
+
+function addClickHandler(element, menuName, func) {
+  document.getElementById(element).addEventListener('click', function () {
+    func()
+    document.getElementById(menuName).hidden = true;
+  });
+}
+
+function addMenuClickHandlers(menuName, menuElementToFunc) {
+  for (let e in menuElementToFunc) {
+    document.getElementById(e).addEventListener('click', function (event) {
+      menuElementToFunc[e](event)
+      document.getElementById(menuName).hidden = true;
+    });
   }
 }
