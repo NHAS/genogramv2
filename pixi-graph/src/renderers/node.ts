@@ -3,10 +3,11 @@ import { Circle, Rectangle } from '@pixi/math';
 import { Sprite } from '@pixi/sprite';
 import { SmoothGraphics as Graphics } from '@pixi/graphics-smooth';
 import '@pixi/mixin-get-child-by-name';
-//import { colorToPixi } from '../utils/color';
 import { NodeStyle } from '../utils/style';
 import { TextureCache } from '../texture-cache';
 import { Texture } from '@pixi/core';
+import { textToPixi } from '../utils/text';
+
 
 const DELIMETER = '::';
 const WHITE = 0xffffff;
@@ -30,10 +31,11 @@ export function updateNodeStyle(nodeGfx: Container, nodeStyle: NodeStyle, textur
 
   const nodeTextureKey = [NODE_NAME, nodeStyle.gender, nodeStyle.size].join(DELIMETER);
 
-  let nodeCircleTexture: Texture;
+  const nodeSpirte = nodeGfx.getChildByName!(NODE_NAME) as Sprite;
+  let nodeTexture: Texture;
   switch (nodeStyle.gender) {
     case "female":
-      nodeCircleTexture = textureCache.get(nodeTextureKey, () => {
+      nodeTexture = textureCache.get(nodeTextureKey, () => {
         const graphics = new Graphics();
 
         graphics.lineStyle(nodeStyle.border.width, 0x00000)
@@ -47,7 +49,7 @@ export function updateNodeStyle(nodeGfx: Container, nodeStyle: NodeStyle, textur
       // nodeGfx
       (nodeGfx.hitArea as Circle).radius = nodeOuterSize;
     case "male":
-      nodeCircleTexture = textureCache.get(nodeTextureKey, () => {
+      nodeTexture = textureCache.get(nodeTextureKey, () => {
         const graphics = new Graphics();
 
         graphics.lineStyle(nodeStyle.border.width, 0x00000)
@@ -66,22 +68,24 @@ export function updateNodeStyle(nodeGfx: Container, nodeStyle: NodeStyle, textur
 
 
     default:
-      nodeCircleTexture = textureCache.get(nodeTextureKey, () => {
-        const graphics = new Graphics();
 
-        graphics.lineStyle(nodeStyle.border.width, 0x00000)
-        graphics.beginFill(WHITE, 1.0, true);
-        graphics.drawCircle(nodeStyle.size, nodeStyle.size, nodeStyle.size);
-        graphics.endFill()
-        return graphics;
+      nodeTexture = textureCache.get(nodeTextureKey, () => {
+        const text = textToPixi("?", {
+          fontFamily: nodeStyle.label.fontFamily,
+          fontSize: nodeStyle.size * 2
+        });
+
+        return text;
       });
+
+
+
       (nodeGfx.hitArea as Circle).radius = nodeOuterSize;
   }
 
 
 
   // nodeGfx -> nodeCircle
-  const nodeSpirte = nodeGfx.getChildByName!(NODE_NAME) as Sprite;
-  nodeSpirte.texture = nodeCircleTexture;
-  //[nodeCircle.tint, nodeCircle.alpha] = colorToPixi(nodeStyle.color);
+
+  nodeSpirte.texture = nodeTexture;
 }
